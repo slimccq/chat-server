@@ -1,6 +1,11 @@
+'use strict';
+
 const test = require('ava');
+const WebSocket = require('ws');
 const util = require('./util')
 const Trie = require('./trie');
+const ChatServer = require('./server');
+
 
 test('format_time', t => {
     let input = [
@@ -54,6 +59,117 @@ test('frequent_word', t => {
     }
 });
 
-// test('join_room', t => {
+async function createWSClient(port, arr) {
+    var promise = new Promise(function(resolve, reject) {
+        const ws = new WebSocket(`ws://127.0.0.1:${port}/chat`);
+        ws.on('open', function() {
+            arr.push(ws);
+            resolve();
+        });
+        ws.on('error', function(err) {
+            // console.log(err);
+        });
+    });
+    return promise;
+}
+
+async function waitForSec(sec) {
+    var promise = new Promise(function(resolve, reject) {
+        setTimeout(function(){
+            resolve();
+        }, sec);
+    });
+    return promise;
+}
+
+async function readMessage(ws, count, message_queue) {
+    var promise = new Promise(function(resolve, reject) {
+        ws.on('message', function(message) {
+            message_queue.push(message);
+            // console.log(message);
+            if (message_queue.length >= count) {
+                resolve();
+            }
+        });
+    });
+    return promise;
+}
+
+test('join_room', async t => {
+    let port = 8008;
+    let server = new ChatServer(port);
+    server.start();
     
-// });
+    await waitForSec(2);
+
+    let to_send = [
+        "a quick brown fox",
+        "jumps over",
+        "the lazy dog",
+    ];
+
+    let ws_list = [];
+    await createWSClient(port, ws_list);
+    await createWSClient(port, ws_list);
+
+    let ws1 = ws_list[0];
+    let ws2 = ws_list[1];
+
+    ws1.send('tom');
+    for (let i = 0; i < to_send; i++) {
+        ws1.send(to_send[i]);
+    }
+
+    ws2.send('jerry');
+    
+    let to_recv = []; 
+    await readMessage(ws2, to_send.length, to_recv);
+    // console.log(to_recv);
+    for (let i = 0; i < to_recv.length; i++) {
+        t.true(to_send[i] == to_recv[i]);
+    }
+});
+
+test('command_popular', async t => {
+    let port = 8009;
+    let server = new ChatServer(port);
+    server.start();
+
+    await waitForSec(1);
+
+    let ws_list = [];
+    await createWSClient(port, ws_list);
+    let ws1 = ws_list[0];
+
+    ws1.send('tom');
+    ws1.send('how do u do');
+    ws1.send('/popular');
+   
+    to_recv = [];
+    await readMessage(ws2, to_send.length, to_recv);
+    t.true(messages[0] == 'how do u do');
+    t.true(messages[1], 'do');
+
+    server.close();
+});
+
+test('command_stats', async t => {
+    let server = new ChatServer(8010);
+    server.start();
+
+    await waitForSec(1);
+
+    let ws_list = [];
+    await createWSClient(port, ws_list);
+    let ws1 = ws_list[0];
+
+    ws1.send('tom');
+    ws1.send('/stats tom');
+
+    to_recv = [];
+    await readMessage(ws2, 1, to_recv);
+
+    t.true(to_recv.length > 0);
+    
+    server.close();
+});

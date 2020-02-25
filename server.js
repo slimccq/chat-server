@@ -32,6 +32,13 @@ class ChatServer {
     }
     
     /**
+     * @method close server
+     */
+    close() {
+        this.ws.close();
+    }
+
+    /**
      * @method 
      * @return {Number} a new unique integer to identify new client connection
      */

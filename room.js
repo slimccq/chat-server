@@ -80,7 +80,7 @@ class ChatRoom {
         this.names[player.name] = player;
         let content = `${player.name} joined`; 
         this.sendHistory(player);
-        this.broadcast(content);
+        // this.broadcast(content);
         console.log(content);
     }
 
@@ -92,6 +92,7 @@ class ChatRoom {
         let content = `${player.name} leaved`; 
         delete this.names[player.name];
         delete this.players[player.serial];
+        // this.broadcast(content);
         console.log(content);
     }
 
