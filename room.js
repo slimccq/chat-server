@@ -17,6 +17,9 @@ class ChatRoom {
         this.loadProfanity();
     }
 
+    /**
+     * @method load profanity word list from file
+     */
     loadProfanity() {
         let buf = fs.readFileSync('list.txt');
         let content = buf.toString();
@@ -27,6 +30,12 @@ class ChatRoom {
         }
     }
 
+    /**
+     * @method
+     * @param {Array} [sentence] array of char 
+     * @param {Number} [pos] start position of array to find profinity word
+     * @return {Number} return index if profinity word found, otherwise return -1
+     */
     putToHistory(name, words) {
         let now = new Date();
         this.message_history.push({'name': name, 'words': words, 'time': now});
@@ -38,6 +47,10 @@ class ChatRoom {
         }
     }
 
+    /**
+     * @method send back a list of the last 50 chat messages
+     * @param {Player} [player] 
+     */
     sendHistory(player) {
         let start_pos = 0;
         if (this.message_history.length > MAX_CHAT_HISTORY) {
@@ -58,6 +71,10 @@ class ChatRoom {
         }
     }
 
+    /**
+     * @method handle player join chat room
+     * @param {Player} [player] 
+     */
     join(player) {
         this.players[player.serial] = player;
         this.names[player.name] = player;
@@ -67,6 +84,10 @@ class ChatRoom {
         console.log(content);
     }
 
+    /**
+     * @method handle player leave chat room
+     * @param {Player} [player] 
+     */
     leave(player) {
         let content = `${player.name} leaved`; 
         delete this.names[player.name];
@@ -81,6 +102,10 @@ class ChatRoom {
         } 
     }
 
+    /**
+     * @method
+     * @return {String} most popular word in the last 5 seconds
+     */
     popularWord() {
         let now = new Date();
         let trie = new Trie();
@@ -98,6 +123,11 @@ class ChatRoom {
         return trie.popularWord();
     }
 
+    /**
+     * @method
+     * @param {String} [name] player name
+     * @return {String} how long the user has been logged in
+     */
     stats(name) {
         let player = this.names[name];
         if (player) {
@@ -107,6 +137,11 @@ class ChatRoom {
         return '';
     }
 
+    /**
+     * @method
+     * @param {Player} [player] player object
+     * @param {Array} [words] array of words player chat
+     */
     handleChat(player, words) {
         let filtered = [];
         for (let i = 0; i < words.length; i++) {
@@ -120,6 +155,11 @@ class ChatRoom {
         this.broadcast(text);
     }
 
+    /**
+     * @method
+     * @param {Player} [player] player object
+     * @param {Array} [words] array of words, contains command and its parameters
+     */
     handleCommand(player, words) {
         let command = words[0];
         switch (command) {
@@ -139,6 +179,11 @@ class ChatRoom {
         }
     }
 
+    /**
+     * @method
+     * @param {Player} [player] player object
+     * @param {String} [message] message player sent to server
+     */
     onMessage(player, message) {
         try {
             if (message.length == 0) {

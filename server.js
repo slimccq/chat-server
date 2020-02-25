@@ -13,6 +13,9 @@ class ChatServer {
         this.room = new ChatRoom();
     }
     
+    /**
+     * @method start acccept client connection
+     */   
     start() {
         let self = this;
         this.ws = new WebSocket.Server({ port: this.port, path: '/chat' });
@@ -28,6 +31,10 @@ class ChatServer {
         });
     }
     
+    /**
+     * @method 
+     * @return {Number} a new unique integer to identify new client connection
+     */
     nextSerial() {
         this.serial += 1;
         return this.serial;

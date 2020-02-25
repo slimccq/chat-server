@@ -8,6 +8,11 @@ class Trie {
         this.frequency = {'freq': 0, 'word': ''};
     }
 
+    /**
+     * @method
+     * @param {String} [word] a word of string
+     * @param {Bool} [use_freqency=false] whether calculate word freqency
+     */
     insertWord(word, use_freqency) {
         let node = this.root;
         let text = word.toLowerCase();
@@ -26,6 +31,10 @@ class Trie {
         }
     }
 
+    /**
+     * @method
+     * @return {String} return most frequent word
+     */
     addFrequency(word, node) {
         if (node['freq']) {
             node['freq'] += 1
@@ -42,6 +51,12 @@ class Trie {
         return this.frequency['word'];
     }
 
+    /**
+     * @method
+     * @param {Array} [sentence] array of char 
+     * @param {Number} [pos] start position of array to find profinity word
+     * @return {Number} return index if profinity word found, otherwise return -1
+     */
     matchAt(sentence, pos) {
         let node = this.root;
         while (pos >= 0 && pos < sentence.length) {
@@ -60,6 +75,12 @@ class Trie {
         return -1;
     }
 
+    /**
+     * @method
+     * @param {Array} [sentence] array of char 
+     * @return {Array} array contains a start and end index, point a profanity word
+     *          otherwise return empty array
+     */
     matchString(sentence) {
         for (let i = 0; i < sentence.length; i++) {
             let idx = this.matchAt(sentence, i);
@@ -67,13 +88,19 @@ class Trie {
                 return [i, idx];
             }
         }
+        return [];
     }
 
+    /**
+     * @method
+     * @param {string} [text] text string to filter
+     * @return {string} filtered text with * character replaced
+     */
     filterText(text) {
         text = text.toLowerCase();
         let sentence = Array.from(text);
         let range = this.matchString(sentence);
-        if (range == undefined) {
+        if (range.length == 0) {
             return text;
         }
         let start = range[0];
