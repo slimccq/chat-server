@@ -41,7 +41,7 @@ class Trie {
         } else {
             node['freq'] = 1
         }
-        if (node['freq'] > this.frequency['freq']) {
+        if (node['freq'] >= this.frequency['freq']) {
             this.frequency['freq'] = node['freq'];
             this.frequency['word'] = word;
         }
@@ -113,3 +113,4 @@ class Trie {
 }
 
 module.exports = Trie
+
