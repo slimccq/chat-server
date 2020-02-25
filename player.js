@@ -6,7 +6,7 @@ class Player {
         this.serial = serial;
         this.room = room;
         this.name = '';
-        this.loggon_time = new Date();
+        this.loggin_time = new Date();
     }
 
     start() {

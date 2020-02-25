@@ -1,11 +1,16 @@
 'use strict';
 
-const {ChatServer} = require('./chat_server');
+const ChatServer = require('./server');
+
 
 function main() {
-    let server = new ChatServer(8008);
+    let port = 8008;
+    if (process.argv.length >= 3) {
+        port = parseInt(process.argv[2]);
+    }
+    let server = new ChatServer(port);
     server.start();
-    console.log('chat server started');
+    console.log('server listen on port', port);
 }
 
 main()

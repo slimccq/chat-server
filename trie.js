@@ -5,14 +5,15 @@ class Trie {
     constructor() {
         this.size = 0;
         this.root = {'children': {}};
+        this.frequency = {'freq': 0, 'word': ''};
     }
 
-    insertWord(text) {
+    insertWord(word, use_freqency) {
         let node = this.root;
-        text = text.toLowerCase();
-        let word = Array.from(text);
-        for (let i = 0; i < word.length; i++) {
-            let char = word[i];
+        let text = word.toLowerCase();
+        let arr = Array.from(text);
+        for (let i = 0; i < arr.length; i++) {
+            let char = arr[i];
             if (!(char in node['children'])) {
                 node['children'][char] = {'children': {}};
             } 
@@ -20,6 +21,25 @@ class Trie {
         }
         node['isEnd'] = true;
         this.size += 1;
+        if (use_freqency) {
+            this.addFrequency(text, node);
+        }
+    }
+
+    addFrequency(word, node) {
+        if (node['freq']) {
+            node['freq'] += 1
+        } else {
+            node['freq'] = 1
+        }
+        if (node['freq'] > this.frequency['freq']) {
+            this.frequency['freq'] = node['freq'];
+            this.frequency['word'] = word;
+        }
+    }
+
+    popularWord() {
+        return this.frequency['word'];
     }
 
     matchAt(sentence, pos) {
@@ -65,4 +85,4 @@ class Trie {
     }
 }
 
-module.exports.Trie = Trie
+module.exports = Trie

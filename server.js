@@ -1,9 +1,9 @@
 'use strict';
 
-const fs = require('fs');
 const WebSocket = require('ws');
-const {ChatRoom} = require('room');
-const {Player} = require('player');
+const http = require('http');
+const ChatRoom = require('./room');
+const Player = require('./player');
 
 
 class ChatServer {
@@ -12,26 +12,19 @@ class ChatServer {
         this.serial = 0;
         this.room = new ChatRoom();
     }
-
-    loadWordsFromFile(filename) {
-        let buf = fs.readFileSync(filename);
-        let content = buf.toString();
-        let lines = content.split('\n');
-        this.reset();
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i].trim();
-            this.insertWord(line);
-        }
-    }
     
     start() {
         let self = this;
-        this.ws = new WebSocket.Server({ port: this.port });
+        this.ws = new WebSocket.Server({ port: this.port, path: '/chat' });
         this.ws.on('connection', function (ws) {
+            console.log('ws session connected');
             let serial = self.nextSerial();
-            player = new Player(self.serial, ws, this.room);
-            self.player[self.serial] = connection;
+            let player = new Player(ws, serial, self.room);
             player.start();
+        });
+
+        this.ws.on('close', function() {
+            console.log('server closed');
         });
     }
     
