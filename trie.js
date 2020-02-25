@@ -1,30 +1,10 @@
 'use strict';
 
-const fs = require('fs');
 
-// build a trie to insert word and do search
-class ProfanityFilter {
+class Trie {
     constructor() {
-        this.reset();
-    }
-
-    reset() {
         this.size = 0;
-        this.root = {
-            'children': {}, 
-            'isEnd': false
-        };
-    }
-
-    loadWordsFromFile(filename) {
-        let buf = fs.readFileSync(filename);
-        let content = buf.toString();
-        let lines = content.split('\n');
-        this.reset();
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i].trim();
-            this.insertWord(line);
-        }
+        this.root = {'children': {}};
     }
 
     insertWord(text) {
@@ -34,7 +14,7 @@ class ProfanityFilter {
         for (let i = 0; i < word.length; i++) {
             let char = word[i];
             if (!(char in node['children'])) {
-                node['children'][char] = {'children': {}, 'isEnd': false};
+                node['children'][char] = {'children': {}};
             } 
             node = node['children'][char];
         }
@@ -85,7 +65,4 @@ class ProfanityFilter {
     }
 }
 
-module.exports.ProfanityFilter = ProfanityFilter
-
-let filter = new ProfanityFilter();
-filter.loadWordsFromFile('list.txt');
+module.exports.Trie = Trie

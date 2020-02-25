@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const WebSocket = require('ws');
 const {ChatRoom} = require('room');
 const {Player} = require('player');
@@ -12,6 +13,17 @@ class ChatServer {
         this.room = new ChatRoom();
     }
 
+    loadWordsFromFile(filename) {
+        let buf = fs.readFileSync(filename);
+        let content = buf.toString();
+        let lines = content.split('\n');
+        this.reset();
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            this.insertWord(line);
+        }
+    }
+    
     start() {
         let self = this;
         this.ws = new WebSocket.Server({ port: this.port });

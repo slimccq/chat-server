@@ -1,11 +1,11 @@
 const test = require('ava');
-const {ProfanityFilter} = require('./filter');
+const {Trie} = require('./trie');
 
 test('filter_text', t => {
     let words = ['dick', 'fuck', 'bitch', 'bastard'];
-    let filter = new ProfanityFilter();
-    for (let word in words) {
-        filter.insertWord(word);
+    let trie = new Trie();
+    for (let i = 0; i < words.length; i++) {
+        trie.insertWord(words[i]);
     }
     let output = {
         'dickies': '****ies',
@@ -14,7 +14,9 @@ test('filter_text', t => {
         'bastar': 'bastar',
     };
     for (let k in output) {
-        t.true(filter.filterText(k), output[k]);
+        let result = trie.filterText(k);
+        // console.log(result, output[k]);
+        t.true(result == output[k]);
     }
     
 });
